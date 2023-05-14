@@ -1,5 +1,11 @@
 # Resume Builder
 
+## Tech-stack used
+
+- Node.js version 16
+- NPM, dependency manager
+- React.js
+
 ## Steps to Setup the project:
 
 ```script
@@ -70,4 +76,4 @@
       detail: "",
     },
 
-```# Resume-Builder
+```
