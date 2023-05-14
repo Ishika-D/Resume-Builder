@@ -6,7 +6,6 @@ import InputControl from "../InputControl/InputControl";
 import styles from "./Editor.module.css";
 
 function Editor(props) {
-  
   const sections = props.sections;
   const information = props.information;
 
