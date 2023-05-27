@@ -93,22 +93,24 @@
 .section .content .item {
   border-bottom: 1px dotted lightgray;
   display: flex;
-  flex-direction: column;
   gap: 5px;
   padding-bottom: 10px;
+  justify-content: space-between;
 }
 .section .content .item:last-child {
   border-bottom: none;
 }
 
 .content .title {
-  font-weight: 500;
+  text-decoration: underline;
+  text-transform: uppercase;
+  font-weight: bold;
   font-size: 1rem;
   line-height: 1.3rem;
 }
 
 .content .subTitle {
-  font-weight: bold;
+  font-weight: 400;
   color: var(--color);
   font-size: 1rem;
 }
@@ -142,6 +144,16 @@
   width: 14px;
 }
 
+.content .location {
+  align-self: end;
+  font-size: 0.875rem;
+}
+
+.content .location svg {
+  height: 14px;
+  width: 14px;
+}
+
 .content .points,
 .numbered {
   padding-left: 18px;
@@ -156,7 +168,6 @@
 }
 .numbered li {
   list-style-type: disc;
-  width: 200px;
 }
 
 .hidden {
