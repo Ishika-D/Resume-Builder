@@ -124,8 +124,15 @@
   align-items: center;
   cursor: pointer;
   transition: 200ms;
+  margin-right: 2px;
 }
 
 .body button:active {
   transform: translateY(2px);
+}
+
+.body .btnRow {
+  align-self: end;
+  flex-direction: row;
+  display: flex;
 }

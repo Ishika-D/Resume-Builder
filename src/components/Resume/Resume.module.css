@@ -16,18 +16,22 @@
 .header {
   display: flex;
   flex-direction: column;
+  align-self: center;
+  text-align: center;
 }
 
 .header .heading {
-  font-size: 2.7rem;
-  font-weight: 500;
-  text-transform: capitalize;
+  font-size: 2.0rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .header .subHeading {
   color: var(--color);
-  font-weight: 500;
+  font-weight: 200;
   font-size: 1.1rem;
+  text-align: center;
 }
 
 .header .links {
@@ -71,10 +75,13 @@
 }
 
 .section .sectionTitle {
-  font-size: 1.4rem;
-  font-weight: bold;
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-align: center;
   width: 100%;
-  border-bottom: 2px solid #000;
+  padding-bottom: 2px;
+  border-bottom: 1.2px solid #000;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
 }
 
 .section .content {
@@ -87,7 +94,7 @@
   border-bottom: 1px dotted lightgray;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   padding-bottom: 10px;
 }
 .section .content .item:last-child {
@@ -140,9 +147,16 @@
   padding-left: 18px;
   font-size: 0.875rem;
 }
-
+.skills {
+  justify-content: space-between;
+  display: flex;
+  padding-left: 18px;
+  font-size: 0.875rem;
+  max-width:1000px;
+}
 .numbered li {
-  list-style-type: decimal;
+  list-style-type: disc;
+  width: 200px;
 }
 
 .hidden {
