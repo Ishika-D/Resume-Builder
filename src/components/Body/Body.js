@@ -12,10 +12,11 @@ function Body() {
   const sections = {
     basicInfo: "Basic Info",
     workExp: "Work Experience",
+    skills: "Skills",
     project: "Projects",
     education: "Education",
     achievement: "Achievements",
-    summary: "Summary",
+    objective: "Objective",
     other: "Other",
   };
   const resumeRef = useRef();
@@ -34,6 +35,11 @@ function Body() {
       sectionTitle: sections.workExp,
       details: [],
     },
+    [sections.skills]: {
+      id: sections.skills,
+      sectionTitle: sections.skills,
+      points: [],
+    },
     [sections.project]: {
       id: sections.project,
       sectionTitle: sections.project,
@@ -49,9 +55,9 @@ function Body() {
       sectionTitle: sections.achievement,
       points: [],
     },
-    [sections.summary]: {
-      id: sections.summary,
-      sectionTitle: sections.summary,
+    [sections.objective]: {
+      id: sections.objective,
+      sectionTitle: sections.objective,
       detail: "",
     },
     [sections.other]: {
