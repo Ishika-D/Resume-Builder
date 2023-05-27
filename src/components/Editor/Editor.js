@@ -61,11 +61,11 @@ function Editor(props) {
           placeholder="Enter certificate link"
           value={values.certificationLink}
           onChange={(event) =>
-            setValues((prev) => ({
-              ...prev,
-              certificationLink: event.target.value,
-            }))
-          }
+              setValues((prev) => ({
+                ...prev,
+                certificationLink: event.target.value,
+              }))
+            }
         />
         <InputControl
           label="Location"
@@ -200,26 +200,15 @@ function Editor(props) {
           setValues((prev) => ({ ...prev, college: event.target.value }))
         }
       />
-      <div className={styles.row}>
-        <InputControl
-          label="Start Date"
-          type="date"
-          placeholder="Enter start date of this education"
-          value={values.startDate}
-          onChange={(event) =>
-            setValues((prev) => ({ ...prev, startDate: event.target.value }))
-          }
-        />
-        <InputControl
-          label="End Date"
-          type="date"
-          placeholder="Enter end date of this education"
-          value={values.endDate}
-          onChange={(event) =>
-            setValues((prev) => ({ ...prev, endDate: event.target.value }))
-          }
-        />
-      </div>
+      <InputControl
+        label="Percent"
+        type="number"
+        placeholder="Enter acquired percent education"
+        value={values.percent}
+        onChange={(event) =>{
+          setValues((prev) => ({ ...prev, percent: event.target.value }));
+        }}
+      />
     </div>
   );
   const basicInfoBody = (
@@ -272,10 +261,38 @@ function Editor(props) {
         <InputControl
           label="Enter phone"
           value={values.phone}
+          type="number"
           placeholder="Enter your phone number"
-          onChange={(event) =>
+          onChange={(event) =>{
             setValues((prev) => ({ ...prev, phone: event.target.value }))
-          }
+          }}
+        />
+      </div>
+    </div>
+  );
+  const skillsBody = (
+    <div className={styles.detail}>
+      <div className={styles.column}>
+        <label>List your Skills</label>
+        <InputControl
+          placeholder="Line 1"
+          value={values.points ? values.points[0] : ""}
+          onChange={(event) => handlePointUpdate(event.target.value, 0)}
+        />
+        <InputControl
+          placeholder="Line 2"
+          value={values.points ? values.points[1] : ""}
+          onChange={(event) => handlePointUpdate(event.target.value, 1)}
+        />
+        <InputControl
+          placeholder="Line 3"
+          value={values.points ? values.points[2] : ""}
+          onChange={(event) => handlePointUpdate(event.target.value, 2)}
+        />
+        <InputControl
+          placeholder="Line 4"
+          value={values.points ? values.points[3] : ""}
+          onChange={(event) => handlePointUpdate(event.target.value, 3)}
         />
       </div>
     </div>
@@ -307,14 +324,14 @@ function Editor(props) {
       </div>
     </div>
   );
-  const summaryBody = (
+  const objectiveBody = (
     <div className={styles.detail}>
       <InputControl
-        label="Summary"
-        value={values.summary}
-        placeholder="Enter your objective/summary"
+        label="Objective"
+        value={values.objective}
+        placeholder="Enter your objective"
         onChange={(event) =>
-          setValues((prev) => ({ ...prev, summary: event.target.value }))
+          setValues((prev) => ({ ...prev, objective: event.target.value }))
         }
       />
     </div>
@@ -338,14 +355,16 @@ function Editor(props) {
         return basicInfoBody;
       case sections.workExp:
         return workExpBody;
+      case sections.skills:
+        return skillsBody;
       case sections.project:
         return projectBody;
       case sections.education:
         return educationBody;
       case sections.achievement:
         return achievementsBody;
-      case sections.summary:
-        return summaryBody;
+      case sections.objective:
+        return objectiveBody;
       case sections.other:
         return otherBody;
       default:
@@ -423,8 +442,7 @@ function Editor(props) {
         const tempDetail = {
           title: values.title,
           college: values.college,
-          startDate: values.startDate,
-          endDate: values.endDate,
+          percent: values.percent,
         };
         const tempDetails = [...information[sections.education]?.details];
         tempDetails[activeDetailIndex] = tempDetail;
@@ -434,6 +452,19 @@ function Editor(props) {
           [sections.education]: {
             ...prev[sections.education],
             details: tempDetails,
+            sectionTitle,
+          },
+        }));
+        break;
+      }
+      case sections.skills: {
+        const tempPoints = values.points;
+
+        props.setInformation((prev) => ({
+          ...prev,
+          [sections.skills]: {
+            ...prev[sections.skills],
+            points: tempPoints,
             sectionTitle,
           },
         }));
@@ -452,13 +483,13 @@ function Editor(props) {
         }));
         break;
       }
-      case sections.summary: {
-        const tempDetail = values.summary;
+      case sections.objective: {
+        const tempDetail = values.objective;
 
         props.setInformation((prev) => ({
           ...prev,
-          [sections.summary]: {
-            ...prev[sections.summary],
+          [sections.objective]: {
+            ...prev[sections.objective],
             detail: tempDetail,
             sectionTitle,
           },
@@ -542,6 +573,7 @@ function Editor(props) {
         ? activeInfo.details[0]?.startDate || ""
         : "",
       endDate: activeInfo?.details ? activeInfo.details[0]?.endDate || "" : "",
+      percent: activeInfo?.details ? activeInfo.details[0]?.percent || "" : "",
       points: activeInfo?.details
         ? activeInfo.details[0]?.points
           ? [...activeInfo.details[0]?.points]
@@ -558,7 +590,7 @@ function Editor(props) {
         : activeInfo?.detail?.github || "",
       phone: activeInfo?.detail?.phone || "",
       email: activeInfo?.detail?.email || "",
-      summary: typeof activeInfo?.detail !== "object" ? activeInfo.detail : "",
+      objective: typeof activeInfo?.detail !== "object" ? activeInfo.detail : "",
       other: typeof activeInfo?.detail !== "object" ? activeInfo.detail : "",
     });
   }, [activeSectionKey]);
@@ -581,6 +613,7 @@ function Editor(props) {
       location: activeInfo.details[activeDetailIndex]?.location || "",
       startDate: activeInfo.details[activeDetailIndex]?.startDate || "",
       endDate: activeInfo.details[activeDetailIndex]?.endDate || "",
+      percent: activeInfo.details[activeDetailIndex]?.percent || "",
       points: activeInfo.details[activeDetailIndex]?.points || "",
       title: activeInfo.details[activeDetailIndex]?.title || "",
       linkedin: activeInfo.details[activeDetailIndex]?.linkedin || "",
@@ -646,8 +679,10 @@ function Editor(props) {
         </div>
 
         {generateBody()}
-
-        <button onClick={handleSubmission}>Save</button>
+        <div className={styles.btnRow}>
+          {sectionTitle!=="Basic Info"? <button style={{"background-color": "#585757"}}>Prev</button>: ""}
+          <button onClick={handleSubmission}>{sectionTitle==="Other" ? "Submit": "Save & Next"}</button>
+        </div>
       </div>
     </div>
   );
