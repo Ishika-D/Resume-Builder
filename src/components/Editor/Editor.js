@@ -1,18 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { X } from "react-feather";
+import { AlertCircle, X } from "react-feather";
 
 import InputControl from "../InputControl/InputControl";
 
 import styles from "./Editor.module.css";
-import { nextSection, prevSection } from "./validation";
+import { nextSection, prevSection, validation } from "./validation";
 
 function Editor(props) {
   const sections = props.sections;
   const information = props.information;
 
+  const [errors, setErrors] = useState(new Map());
+
+  const addMoreErrors = (key, newError) => {
+    console.log(errors)
+    newError > ""?setErrors(errors.set(key, newError)):errors.delete(key);
+  };
+
   const [activeSectionKey, setActiveSectionKey] = useState(
     Object.keys(sections)[0]
   );
+  const changeActiveSectionKey = (value) => {
+    setErrors(new Map())
+    setActiveSectionKey(value)
+  }
   const [activeInformation, setActiveInformation] = useState(
     information[sections[Object.keys(sections)[0]]]
   );
@@ -46,6 +57,7 @@ function Editor(props) {
           onChange={(event) =>
             setValues((prev) => ({ ...prev, title: event.target.value }))
           }
+          required
         />
         <InputControl
           label="Company Name"
@@ -54,6 +66,7 @@ function Editor(props) {
           onChange={(event) =>
             setValues((prev) => ({ ...prev, companyName: event.target.value }))
           }
+          required
         />
       </div>
       <div className={styles.row}>
@@ -62,11 +75,9 @@ function Editor(props) {
           placeholder="Enter certificate link"
           value={values.certificationLink}
           onChange={(event) =>
-              setValues((prev) => ({
-                ...prev,
-                certificationLink: event.target.value,
-              }))
-            }
+            setValues((prev) => ({ ...prev, certificationLink: event.target.value }))
+          }
+          required
         />
         <InputControl
           label="Location"
@@ -75,6 +86,7 @@ function Editor(props) {
           onChange={(event) =>
             setValues((prev) => ({ ...prev, location: event.target.value }))
           }
+          required
         />
       </div>
       <div className={styles.row}>
@@ -86,6 +98,7 @@ function Editor(props) {
           onChange={(event) =>
             setValues((prev) => ({ ...prev, startDate: event.target.value }))
           }
+          required
         />
         <InputControl
           label="End Date"
@@ -128,6 +141,7 @@ function Editor(props) {
           onChange={(event) =>
             setValues((prev) => ({ ...prev, title: event.target.value }))
           }
+          required
         />
       </div>
       <InputControl
@@ -191,6 +205,7 @@ function Editor(props) {
           onChange={(event) =>
             setValues((prev) => ({ ...prev, title: event.target.value }))
           }
+          required
         />
       </div>
       <InputControl
@@ -200,16 +215,20 @@ function Editor(props) {
         onChange={(event) =>
           setValues((prev) => ({ ...prev, college: event.target.value }))
         }
+        required
       />
       <InputControl
         label="Percent"
         type="number"
         placeholder="Enter acquired percent education"
         value={values.percent}
-        onChange={(event) =>{
+        onChange={(event) => {
+          addMoreErrors("percent", validation("percent", event.target.value))
           setValues((prev) => ({ ...prev, percent: event.target.value }));
         }}
+        required
       />
+      {errors.get("percent")?<div className={styles.errors}><AlertCircle/> {errors.get("percent")}</div>:""}
     </div>
   );
   const basicInfoBody = (
@@ -222,6 +241,7 @@ function Editor(props) {
           onChange={(event) =>
             setValues((prev) => ({ ...prev, name: event.target.value }))
           }
+          required
         />
         <InputControl
           label="Title"
@@ -230,6 +250,7 @@ function Editor(props) {
           onChange={(event) =>
             setValues((prev) => ({ ...prev, title: event.target.value }))
           }
+          required
         />
       </div>
       <div className={styles.row}>
@@ -237,37 +258,50 @@ function Editor(props) {
           label="Linkedin Link"
           value={values.linkedin}
           placeholder="Enter your linkedin profile link"
-          onChange={(event) =>
+          onChange={(event) => {
             setValues((prev) => ({ ...prev, linkedin: event.target.value }))
-          }
+          }}
+          required
         />
         <InputControl
           label="Github Link"
           value={values.github}
           placeholder="Enter your github profile link"
-          onChange={(event) =>
+          onChange={(event) => {
             setValues((prev) => ({ ...prev, github: event.target.value }))
-          }
+          }}
+          required
         />
       </div>
       <div className={styles.row}>
+        <div>
         <InputControl
           label="Email"
           value={values.email}
           placeholder="Enter your email"
-          onChange={(event) =>
+          onChange={(event) => {
+            addMoreErrors("email", validation("email", event.target.value))
             setValues((prev) => ({ ...prev, email: event.target.value }))
-          }
+          }}
+          required
         />
+        {errors.get("email")?<div className={styles.errors}><AlertCircle/> {errors.get("email")}</div>:""}
+        
+        </div>
+        <div>
         <InputControl
           label="Enter phone"
           value={values.phone}
           type="number"
           placeholder="Enter your phone number"
-          onChange={(event) =>{
+          onChange={(event) => {
+            addMoreErrors("phone", validation("phone", event.target.value))
             setValues((prev) => ({ ...prev, phone: event.target.value }))
           }}
+          required
         />
+         {errors.get("phone")?<div className={styles.errors}><AlertCircle/> {errors.get("phone")}</div>:""}
+        </div>
       </div>
     </div>
   );
@@ -374,149 +408,151 @@ function Editor(props) {
   };
 
   const PrevSec = () => {
-    setActiveSectionKey(prevSection(activeSectionKey))
+    changeActiveSectionKey(prevSection(activeSectionKey))
   }
   const handleSubmission = () => {
-    if(activeSectionKey!=="other"){
-      setActiveSectionKey(nextSection(activeSectionKey))
-    }else{
-      props.sendHideVal(false);
-    }
-    switch (sections[activeSectionKey]) {
-      case sections.basicInfo: {
-        const tempDetail = {
-          name: values.name,
-          title: values.title,
-          linkedin: values.linkedin,
-          github: values.github,
-          email: values.email,
-          phone: values.phone,
-        };
-
-        props.setInformation((prev) => ({
-          ...prev,
-          [sections.basicInfo]: {
-            ...prev[sections.basicInfo],
-            detail: tempDetail,
-            sectionTitle,
-          },
-        }));
-        break;
+    if (errors.size === 0) {
+      if (activeSectionKey !== "other") {
+        changeActiveSectionKey(nextSection(activeSectionKey))
+      } else {
+        props.sendHideVal(false);
       }
-      case sections.workExp: {
-        const tempDetail = {
-          certificationLink: values.certificationLink,
-          title: values.title,
-          startDate: values.startDate,
-          endDate: values.endDate,
-          companyName: values.companyName,
-          location: values.location,
-          points: values.points,
-        };
-        const tempDetails = [...information[sections.workExp]?.details];
-        tempDetails[activeDetailIndex] = tempDetail;
+      switch (sections[activeSectionKey]) {
+        case sections.basicInfo: {
+          const tempDetail = {
+            name: values.name,
+            title: values.title,
+            linkedin: values.linkedin,
+            github: values.github,
+            email: values.email,
+            phone: values.phone,
+          };
 
-        props.setInformation((prev) => ({
-          ...prev,
-          [sections.workExp]: {
-            ...prev[sections.workExp],
-            details: tempDetails,
-            sectionTitle,
-          },
-        }));
-        break;
-      }
-      case sections.project: {
-        const tempDetail = {
-          link: values.link,
-          title: values.title,
-          overview: values.overview,
-          github: values.github,
-          points: values.points,
-        };
-        const tempDetails = [...information[sections.project]?.details];
-        tempDetails[activeDetailIndex] = tempDetail;
+          props.setInformation((prev) => ({
+            ...prev,
+            [sections.basicInfo]: {
+              ...prev[sections.basicInfo],
+              detail: tempDetail,
+              sectionTitle,
+            },
+          }));
+          break;
+        }
+        case sections.workExp: {
+          const tempDetail = {
+            certificationLink: values.certificationLink,
+            title: values.title,
+            startDate: values.startDate,
+            endDate: values.endDate,
+            companyName: values.companyName,
+            location: values.location,
+            points: values.points,
+          };
+          const tempDetails = [...information[sections.workExp]?.details];
+          tempDetails[activeDetailIndex] = tempDetail;
 
-        props.setInformation((prev) => ({
-          ...prev,
-          [sections.project]: {
-            ...prev[sections.project],
-            details: tempDetails,
-            sectionTitle,
-          },
-        }));
-        break;
-      }
-      case sections.education: {
-        const tempDetail = {
-          title: values.title,
-          college: values.college,
-          percent: values.percent,
-        };
-        const tempDetails = [...information[sections.education]?.details];
-        tempDetails[activeDetailIndex] = tempDetail;
+          props.setInformation((prev) => ({
+            ...prev,
+            [sections.workExp]: {
+              ...prev[sections.workExp],
+              details: tempDetails,
+              sectionTitle,
+            },
+          }));
+          break;
+        }
+        case sections.project: {
+          const tempDetail = {
+            link: values.link,
+            title: values.title,
+            overview: values.overview,
+            github: values.github,
+            points: values.points,
+          };
+          const tempDetails = [...information[sections.project]?.details];
+          tempDetails[activeDetailIndex] = tempDetail;
 
-        props.setInformation((prev) => ({
-          ...prev,
-          [sections.education]: {
-            ...prev[sections.education],
-            details: tempDetails,
-            sectionTitle,
-          },
-        }));
-        break;
-      }
-      case sections.skills: {
-        const tempPoints = values.points;
+          props.setInformation((prev) => ({
+            ...prev,
+            [sections.project]: {
+              ...prev[sections.project],
+              details: tempDetails,
+              sectionTitle,
+            },
+          }));
+          break;
+        }
+        case sections.education: {
+          const tempDetail = {
+            title: values.title,
+            college: values.college,
+            percent: values.percent,
+          };
+          const tempDetails = [...information[sections.education]?.details];
+          tempDetails[activeDetailIndex] = tempDetail;
 
-        props.setInformation((prev) => ({
-          ...prev,
-          [sections.skills]: {
-            ...prev[sections.skills],
-            points: tempPoints,
-            sectionTitle,
-          },
-        }));
-        break;
-      }
-      case sections.achievement: {
-        const tempPoints = values.points;
+          props.setInformation((prev) => ({
+            ...prev,
+            [sections.education]: {
+              ...prev[sections.education],
+              details: tempDetails,
+              sectionTitle,
+            },
+          }));
+          break;
+        }
+        case sections.skills: {
+          const tempPoints = values.points;
 
-        props.setInformation((prev) => ({
-          ...prev,
-          [sections.achievement]: {
-            ...prev[sections.achievement],
-            points: tempPoints,
-            sectionTitle,
-          },
-        }));
-        break;
-      }
-      case sections.objective: {
-        const tempDetail = values.objective;
+          props.setInformation((prev) => ({
+            ...prev,
+            [sections.skills]: {
+              ...prev[sections.skills],
+              points: tempPoints,
+              sectionTitle,
+            },
+          }));
+          break;
+        }
+        case sections.achievement: {
+          const tempPoints = values.points;
 
-        props.setInformation((prev) => ({
-          ...prev,
-          [sections.objective]: {
-            ...prev[sections.objective],
-            detail: tempDetail,
-            sectionTitle,
-          },
-        }));
-        break;
-      }
-      case sections.other: {
-        const tempDetail = values.other;
+          props.setInformation((prev) => ({
+            ...prev,
+            [sections.achievement]: {
+              ...prev[sections.achievement],
+              points: tempPoints,
+              sectionTitle,
+            },
+          }));
+          break;
+        }
+        case sections.objective: {
+          const tempDetail = values.objective;
 
-        props.setInformation((prev) => ({
-          ...prev,
-          [sections.other]: {
-            ...prev[sections.other],
-            detail: tempDetail,
-            sectionTitle,
-          },
-        }));
-        break;
+          props.setInformation((prev) => ({
+            ...prev,
+            [sections.objective]: {
+              ...prev[sections.objective],
+              detail: tempDetail,
+              sectionTitle,
+            },
+          }));
+          break;
+        }
+        case sections.other: {
+          const tempDetail = values.other;
+
+          props.setInformation((prev) => ({
+            ...prev,
+            [sections.other]: {
+              ...prev[sections.other],
+              detail: tempDetail,
+              sectionTitle,
+            },
+          }));
+          break;
+        }
       }
     }
   };
@@ -588,8 +624,8 @@ function Editor(props) {
           ? [...activeInfo.details[0]?.points]
           : ""
         : activeInfo?.points
-        ? [...activeInfo.points]
-        : "",
+          ? [...activeInfo.points]
+          : "",
       title: activeInfo?.details
         ? activeInfo.details[0]?.title || ""
         : activeInfo?.detail?.title || "",
@@ -636,63 +672,63 @@ function Editor(props) {
       <div className={styles.header}>
         {Object.keys(sections)?.map((key) => (
           <div
-            className={`${styles.section} ${
-              activeSectionKey === key ? styles.active : ""
-            }`}
+            className={`${styles.section} ${activeSectionKey === key ? styles.active : ""
+              }`}
             key={key}
-            onClick={() => setActiveSectionKey(key)}
+            onClick={() => changeActiveSectionKey(key)}
           >
             {sections[key]}
           </div>
         ))}
       </div>
 
-      <div className={styles.body}>
+
+      <form className={styles.body} name="form" id="form" onSubmit={(event) => {
+        event.preventDefault();
+        handleSubmission()
+      }} >
         <InputControl
           label="Title"
           placeholder="Enter section title"
           value={sectionTitle}
           onChange={(event) => setSectionTitle(event.target.value)}
+          required
         />
 
         <div className={styles.chips}>
           {activeInformation?.details
             ? activeInformation?.details?.map((item, index) => (
-                <div
-                  className={`${styles.chip} ${
-                    activeDetailIndex === index ? styles.active : ""
+              <div
+                className={`${styles.chip} ${activeDetailIndex === index ? styles.active : ""
                   }`}
-                  key={item.title + index}
-                  onClick={() => setActiveDetailIndex(index)}
-                >
-                  <p>
-                    {sections[activeSectionKey]} {index + 1}
-                  </p>
-                  <X
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleDeleteDetail(index);
-                    }}
-                  />
-                </div>
-              ))
+                key={item.title + index}
+                onClick={() => setActiveDetailIndex(index)}
+              >
+                <p>
+                  {sections[activeSectionKey]} {index + 1}
+                </p>
+                <X
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleDeleteDetail(index);
+                  }}
+                />
+              </div>
+            ))
             : ""}
-          {activeInformation?.details &&
-          activeInformation?.details?.length > 0 ? (
-            <div className={styles.new} onClick={handleAddNew}>
-              +New
-            </div>
-          ) : (
-            ""
+          {activeInformation?.details && (
+            <button className={styles.new} type="button" onClick={handleAddNew}>
+              + New
+            </button>
           )}
         </div>
 
         {generateBody()}
         <div className={styles.btnRow}>
-          {sectionTitle!=="Basic Info"? <button style={{"background-color": "#585757"}} onClick={PrevSec}>Prev</button>: ""}
-          <button onClick={handleSubmission}>{sectionTitle==="Other" ? "Submit": "Save & Next"}</button>
+          {sectionTitle !== "Basic Info" ? <button style={{ "background-color": "#585757" }} type="button" onClick={PrevSec}>Prev</button> : ""}
+          <button type="submit">{sectionTitle === "Other" ? "Submit" : "Save & Next"}</button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
