@@ -11,17 +11,20 @@ function Body() {
   const colors = ["#239ce2", "#48bb78", "#0bc5ea", "#a0aec0", "#ed8936"];
   const sections = {
     basicInfo: "Basic Info",
+    objective: "Objective",
     workExp: "Work Experience",
     skills: "Skills",
     project: "Projects",
     education: "Education",
     achievement: "Achievements",
-    objective: "Objective",
     other: "Other",
   };
   const resumeRef = useRef();
 
   const [ hideVal, setHideVal ] = useState(true);
+  const sendHideVal = (data) => {
+    setHideVal(data)
+  }
 
   const [activeColor, setActiveColor] = useState(colors[0]);
   const [resumeInformation, setResumeInformation] = useState({
@@ -112,7 +115,8 @@ function Body() {
             <Editor
             sections={sections}
             information={resumeInformation}
-            setInformation={setResumeInformation} />
+            setInformation={setResumeInformation} 
+            sendHideVal = {sendHideVal}/>
           : 
           <Resume
           className={styles.resume}

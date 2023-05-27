@@ -4,6 +4,7 @@ import { X } from "react-feather";
 import InputControl from "../InputControl/InputControl";
 
 import styles from "./Editor.module.css";
+import { nextSection, prevSection } from "./validation";
 
 function Editor(props) {
   const sections = props.sections;
@@ -372,7 +373,15 @@ function Editor(props) {
     }
   };
 
+  const PrevSec = () => {
+    setActiveSectionKey(prevSection(activeSectionKey))
+  }
   const handleSubmission = () => {
+    if(activeSectionKey!=="other"){
+      setActiveSectionKey(nextSection(activeSectionKey))
+    }else{
+      props.sendHideVal(false);
+    }
     switch (sections[activeSectionKey]) {
       case sections.basicInfo: {
         const tempDetail = {
@@ -680,7 +689,7 @@ function Editor(props) {
 
         {generateBody()}
         <div className={styles.btnRow}>
-          {sectionTitle!=="Basic Info"? <button style={{"background-color": "#585757"}}>Prev</button>: ""}
+          {sectionTitle!=="Basic Info"? <button style={{"background-color": "#585757"}} onClick={PrevSec}>Prev</button>: ""}
           <button onClick={handleSubmission}>{sectionTitle==="Other" ? "Submit": "Save & Next"}</button>
         </div>
       </div>
