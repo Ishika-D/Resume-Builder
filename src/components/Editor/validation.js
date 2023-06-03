@@ -24,8 +24,8 @@ export const validation = (type, value) => {
 const sections = [
     "basicInfo",
     "objective",
-    "workExp",
     "skills",
+    "workExp",
     "project",
     "education",
     "achievement",

@@ -12,8 +12,8 @@ function Body() {
   const sections = {
     basicInfo: "Basic Info",
     objective: "Objective",
-    workExp: "Work Experience",
     skills: "Skills",
+    workExp: "Work Experience",
     project: "Projects",
     education: "Education",
     achievement: "Achievements",
