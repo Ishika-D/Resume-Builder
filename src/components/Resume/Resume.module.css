@@ -101,6 +101,14 @@
   border-bottom: none;
 }
 
+.section .content .itemProj {
+  border-bottom: 1px dotted lightgray;
+  display: grid;
+  gap: 5px;
+  padding-bottom: 10px;
+  justify-content: space-between;
+}
+
 .content .title {
   text-decoration: underline;
   text-transform: uppercase;
